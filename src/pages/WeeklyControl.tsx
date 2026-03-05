@@ -133,10 +133,8 @@ export function WeeklyControl() {
           const totalSpent = weekExpenses.reduce((acc, curr) => acc + curr.value, 0);
           const remaining = weeklyBudget - totalSpent;
           
-          // Meta calculation: 10% of weekly income share
-          const weeklyIncomeShare = totalIncome / weeksCount;
-          const economy = remaining; // This is what's left from the budget
-          const isGoalMet = economy >= (weeklyIncomeShare * 0.1);
+          const weeklyGoal = weeklyBudget * 0.1;
+          const isGoalMet = remaining >= weeklyGoal;
 
           const chartData = [
             { name: 'Total Gasto', value: totalSpent, color: '#EF4444' },
@@ -153,12 +151,18 @@ export function WeeklyControl() {
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Semana {index + 1}</h3>
                 </div>
                 {isGoalMet ? (
-                  <div className="flex items-center gap-2 text-emerald-500 text-xs font-bold bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                    <CheckCircle2 size={14} /> Meta Atingida
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500 text-xs font-bold bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                      <CheckCircle2 size={14} /> Meta Atingida
+                    </div>
+                    <p className="text-[10px] text-zinc-500 font-medium">Mínimo: {formatCurrency(weeklyGoal)}</p>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-rose-500 text-xs font-bold bg-rose-500/10 px-3 py-1.5 rounded-full border border-rose-500/20">
-                    <AlertCircle size={14} /> Meta Não Atingida
+                  <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-2 text-rose-600 dark:text-rose-500 text-xs font-bold bg-rose-500/10 px-3 py-1.5 rounded-full border border-rose-500/20">
+                      <AlertCircle size={14} /> Meta Não Atingida
+                    </div>
+                    <p className="text-[10px] text-zinc-500 font-medium">Mínimo: {formatCurrency(weeklyGoal)}</p>
                   </div>
                 )}
               </div>
@@ -214,7 +218,7 @@ export function WeeklyControl() {
                   <div>
                     <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Parabéns!</p>
                     <p className="text-xs text-emerald-800 dark:text-emerald-200/80 leading-relaxed">
-                      Você está dentro da meta de economia semanal. Continue assim para manter sua saúde financeira!
+                      Você economizou {formatCurrency(remaining)}, superando a meta de {formatCurrency(weeklyGoal)} (10%).
                     </p>
                   </div>
                 </div>
@@ -224,7 +228,7 @@ export function WeeklyControl() {
                   <div>
                     <p className="text-sm font-bold text-rose-700 dark:text-rose-400">Atenção!</p>
                     <p className="text-xs text-rose-800 dark:text-rose-200/80 leading-relaxed">
-                      Você não atingiu a meta mínima de 10% de economia nesta semana. Tente reduzir os gastos supérfluos.
+                      Sua economia foi de {formatCurrency(Math.max(0, remaining))}, abaixo da meta de {formatCurrency(weeklyGoal)} (10%).
                     </p>
                   </div>
                 </div>
@@ -237,7 +241,7 @@ export function WeeklyControl() {
                   {weekExpenses.map(expense => {
                     const method = paymentMethods.find(p => p.value === expense.paymentMethod);
                     return (
-                      <div key={expense.id} className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-xl border border-zinc-100 dark:border-zinc-800/30 group hover:border-amber-500/30 transition-all">
+                      <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-xl border border-zinc-100 dark:border-zinc-800/30 hover:border-amber-500/30 transition-all gap-3">
                         <div className="flex items-center gap-3">
                           <div className={cn("p-2 rounded-lg bg-white dark:bg-zinc-800 shadow-sm", method?.color)}>
                             {method && <method.icon size={16} />}
@@ -247,18 +251,20 @@ export function WeeklyControl() {
                             <p className="text-[10px] text-zinc-500">{expense.paymentMethod}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-zinc-100 dark:border-zinc-800/50">
                           <p className="text-sm font-black text-zinc-900 dark:text-white">{formatCurrency(expense.value)}</p>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1">
                             <button 
                               onClick={() => handleEdit(expense)}
-                              className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                              className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all opacity-80 hover:opacity-100 hover:scale-110"
+                              title="Editar"
                             >
                               <Pencil size={14} />
                             </button>
                             <button 
                               onClick={() => handleRemove(expense.id)}
-                              className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                              className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-80 hover:opacity-100 hover:scale-110"
+                              title="Remover"
                             >
                               <Trash2 size={14} />
                             </button>

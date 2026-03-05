@@ -313,16 +313,18 @@ export function MonthlyView() {
                       {formatCurrency(item.value)}
                     </td>
                     <td className="px-4 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => handleEdit(item)}
-                          className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                          className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all opacity-80 hover:opacity-100 hover:scale-110"
+                          title="Editar"
                         >
                           <Pencil size={16} />
                         </button>
                         <button 
                           onClick={() => handleRemove(item)}
-                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-80 hover:opacity-100 hover:scale-110"
+                          title="Remover"
                         >
                           <Trash2 size={16} />
                         </button>
